@@ -8,7 +8,7 @@ import Register from "../components/Register.jsx";
 import Checkout from "../pages/books/Checkout.jsx";
 import CartPage from "../pages/books/CartPage.jsx";
 import Borrow from "../pages/Borrow.jsx";
-
+import BookDetail from "../pages/books/BookDetail.jsx";
 
 const router = createBrowserRouter([
   {
@@ -23,6 +23,7 @@ const router = createBrowserRouter([
       { path: "checkout", element: <Checkout /> },
       { path: "cart", element: <CartPage /> },
       { path: "borrow", element: <Borrow /> },
+      { path: "book/:id", element: <BookDetail /> },
     ],
   },
 ]);
