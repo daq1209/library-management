@@ -9,7 +9,7 @@ import Checkout from "../pages/books/Checkout.jsx";
 import CartPage from "../pages/books/CartPage.jsx";
 import Borrow from "../pages/Borrow.jsx";
 import BookDetail from "../pages/books/BookDetail.jsx";
-
+import Wishlist from "../pages/Wishlist.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -24,6 +24,7 @@ const router = createBrowserRouter([
       { path: "cart", element: <CartPage /> },
       { path: "borrow", element: <Borrow /> },
       { path: "book/:id", element: <BookDetail /> },
+      { path: "wishlist", element: <Wishlist /> },
     ],
   },
 ]);
