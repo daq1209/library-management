@@ -1,19 +1,21 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getImgUrl } from "../../utils/getImgUrl.js";
-import { HiOutlineHeart, HiHeart } from "react-icons/hi2"; // thêm icon full
+import { HiOutlineHeart, HiHeart } from "react-icons/hi2";
 import { useDispatch, useSelector } from "react-redux";
 import { addToWishlist } from "../../redux/features/wishlist/wishlistSlice.js";
 import { removeFromWishlist } from "../../redux/features/wishlist/wishlistSlice.js";
+import { useAuth } from "../../context/AuthContext.jsx";
 
 export default function BookCard({ book }) {
   const dispatch = useDispatch();
   const wishlist = useSelector((state) => state.wishlist.items);
+  const { currentUser } = useAuth();
+  const navigate = useNavigate();
 
-  // Kiểm tra xem sách này có trong wishlist không
   const isInWishlist = wishlist.some((item) => item._id === book._id);
 
   const toggleWishlist = (e) => {
-    e.preventDefault(); // không mở link khi click icon
+    e.preventDefault();
     if (isInWishlist) {
       dispatch(removeFromWishlist(book._id));
     } else {
@@ -21,11 +23,25 @@ export default function BookCard({ book }) {
     }
   };
 
+  const handleBorrow = (e) => {
+    e.preventDefault();
+    if (!currentUser) {
+      alert("Vui lòng đăng nhập để mượn sách!");
+      navigate("/login");
+      return;
+    }
+    navigate("/borrow", { state: { book } });
+  };
+
   return (
     <div className="bg-white shadow-sm border border-gray-100 rounded-lg overflow-hidden hover:shadow-md transition-all duration-200">
       {/* Ảnh + icon wishlist */}
       <div className="relative">
-        <Link to={`/book/${book._id}`} state={{ book }} className="block overflow-hidden">
+        <Link
+          to={`/book/${book._id}`}
+          state={{ book }}
+          className="block overflow-hidden"
+        >
           <img
             src={getImgUrl(book.coverImage)}
             alt={book.title}
@@ -33,7 +49,7 @@ export default function BookCard({ book }) {
           />
         </Link>
 
-        {/* Heart icon */}
+        {/* Icon trái tim wishlist */}
         <button
           onClick={toggleWishlist}
           title={isInWishlist ? "Xóa khỏi Wishlist" : "Thêm vào Wishlist"}
@@ -63,14 +79,23 @@ export default function BookCard({ book }) {
           <div className="text-primary font-bold">
             {book.newPrice ? `${book.newPrice.toLocaleString()}đ` : "Liên hệ"}
           </div>
+        </div>
 
+        {/* Hai nút hành động */}
+        <div className="flex items-center justify-between mt-4">
           <Link
             to={`/book/${book._id}`}
             state={{ book }}
             className="bg-primary text-black px-3 py-1.5 rounded-md text-sm font-medium hover:opacity-90 transition"
           >
-            Mua
+            Thêm vào giỏ
           </Link>
+          <button
+            onClick={handleBorrow}
+            className="border border-primary text-primary px-3 py-1.5 rounded-md text-sm font-medium hover:bg-primary hover:text-black transition"
+          >
+            Mượn sách
+          </button>
         </div>
       </div>
     </div>
