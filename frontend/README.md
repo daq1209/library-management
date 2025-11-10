@@ -1,16 +1,47 @@
-# React + Vite
+📘 README.md
+# 📚 Library Management Web App (Frontend)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Giao diện người dùng cho hệ thống quản lý thư viện — được phát triển bằng **React + Vite + TailwindCSS + Firebase Auth + Redux Toolkit**.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Cài đặt & Chạy dự án
 
-## React Compiler
+### 1️⃣ Yêu cầu môi trường
+Trước khi bắt đầu, đảm bảo bạn đã cài đặt:
+- **Node.js** ≥ 18
+- **npm** ≥ 9 \
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 2️⃣ Clone dự án từ GitHub
+```bash
+git clone https://github.com/<your-username>/<your-repo-name>.git
+cd frontend
 
-## Expanding the ESLint configuration
+3️⃣ Cài đặt dependencies
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Chạy lệnh sau để tải tất cả thư viện cần thiết:
+
+npm install
+
+4️⃣ Cấu hình biến môi trường
+
+Tạo file .env trong thư mục frontend/ lên firebase lấy mã điền thông tin Firebase của bạn:
+
+VITE_API_KEY=your_api_key
+VITE_Auth_Domain=your_auth_domain
+VITE_PROJECT_ID=your_project_id
+VITE_STORAGE_BUCKET=your_storage_bucket
+VITE_MESSAGING_SENDERID=your_sender_id
+VITE_APPID=your_app_id
+VITE_MEASUREMENT_ID=your_measurement_id
+
+
+⚠️ Không commit file .env lên GitHub — đây là thông tin bảo mật.
+
+5️⃣ Chạy project ở chế độ development
+npm run dev
+
+
+Sau khi chạy, mở trình duyệt và truy cập:
+👉 http://localhost:5173
