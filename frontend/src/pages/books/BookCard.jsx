@@ -2,31 +2,50 @@ import { Link, useNavigate } from "react-router-dom";
 import { getImgUrl } from "../../utils/getImgUrl.js";
 import { HiOutlineHeart, HiHeart } from "react-icons/hi2";
 import { useDispatch, useSelector } from "react-redux";
-import { addToWishlist } from "../../redux/features/wishlist/wishlistSlice.js";
-import { removeFromWishlist } from "../../redux/features/wishlist/wishlistSlice.js";
+import { addToWishlist, removeFromWishlist, setWishlistBooks } from "../../redux/features/wishlist/wishlistSlice.js";
+import { addToWishlistAPI, removeFromWishlistAPI, toggleWishlistAPI, getWishlistAPI } from "../../utils/wishlistAPI";
 import { useAuth } from "../../context/AuthContext.jsx";
+import { getBooks } from "../../utils/booksCatalog.js";
+import { useToast } from "../../context/ToastContext";
 
 export default function BookCard({ book }) {
   const dispatch = useDispatch();
   const wishlist = useSelector((state) => state.wishlist.items);
   const { currentUser } = useAuth();
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
   const isInWishlist = wishlist.some((item) => item._id === book._id);
 
-  const toggleWishlist = (e) => {
+  const toggleWishlist = async (e) => {
     e.preventDefault();
-    if (isInWishlist) {
-      dispatch(removeFromWishlist(book._id));
-    } else {
-      dispatch(addToWishlist(book));
+    if (!currentUser) {
+      showToast('Vui lòng đăng nhập để sử dụng Wishlist', 'warning');
+      navigate('/login', { state: { from: location.pathname } });
+      return;
+    }
+    try {
+      // Always use string for bookId
+      await toggleWishlistAPI(String(book._id));
+      // Fetch updated wishlist from server
+      const [resp, books] = await Promise.all([getWishlistAPI(), getBooks()]);
+      const ids = resp.data.items || [];
+      const mapped = ids.map(id => books.find(b => String(b._id) === String(id))).filter(Boolean);
+      dispatch(setWishlistBooks(mapped));
+      if (ids.map(String).includes(String(book._id))) {
+        showToast('✨ Đã thêm vào Wishlist', 'success');
+      } else {
+        showToast('✓ Đã xóa khỏi Wishlist', 'info');
+      }
+    } catch (err) {
+      showToast('Không thể cập nhật Wishlist. Vui lòng thử lại.', 'error');
     }
   };
 
   const handleBorrow = (e) => {
     e.preventDefault();
     if (!currentUser) {
-      alert("Vui lòng đăng nhập để mượn sách!");
+      showToast('Vui lòng đăng nhập để mượn sách', 'warning');
       navigate("/login");
       return;
     }
@@ -50,6 +69,7 @@ export default function BookCard({ book }) {
         </Link>
 
         {/* Icon trái tim wishlist */}
+        {/*
         <button
           onClick={toggleWishlist}
           title={isInWishlist ? "Xóa khỏi Wishlist" : "Thêm vào Wishlist"}
@@ -61,6 +81,7 @@ export default function BookCard({ book }) {
             <HiOutlineHeart className="w-5 h-5 text-slate-700" />
           )}
         </button>
+        */}
       </div>
 
       {/* Thông tin sách */}

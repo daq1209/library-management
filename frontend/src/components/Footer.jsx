@@ -1,63 +1,133 @@
-import React from "react";
-import footerLogo from "../assets/footer-logo.png";
-import { FaFacebook, FaTwitter,FaInstagram } from "react-icons/fa";
+import React, { useCallback, useState } from "react";
+import { LuSparkles, LuFacebook, LuTwitter, LuInstagram, LuMail } from "react-icons/lu";
+
+// NovaLibrary Footer – dark, minimal, elegant
 const Footer = () => {
-    return(
-          <footer className="bg-gray-900 text-white py-10 px-4">
-      {/* Top Section */}
-      <div className="container mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-        {/* Left Side - Logo and Nav */}
-        <div className="md:w-1/2 w-full">
-          <img src={footerLogo} alt="Logo" className="mb-5 w-36" />
-          <ul className="flex flex-col md:flex-row gap-4">
-            <li><a href="#home" className="hover:text-primary">Home</a></li>
-            <li><a href="#services" className="hover:text-primary">Services</a></li>
-            <li><a href="#about" className="hover:text-primary">About Us</a></li>
-            <li><a href="#contact" className="hover:text-primary">Contact</a></li>
-          </ul>
+  const [email, setEmail] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  // Placeholder for future backend integration
+  const handleSubmit = useCallback(async (e) => {
+    e.preventDefault();
+    if (!email) return;
+    setSubmitting(true);
+    try {
+      // TODO: call newsletter API endpoint here
+      await new Promise((r) => setTimeout(r, 700));
+      // You can add a toast here in the future
+    } finally {
+      setSubmitting(false);
+    }
+  }, [email]);
+
+  return (
+    <footer className="relative bg-[#0B1220] text-slate-300">
+      {/* Subtle horizon line */}
+      <div className="pointer-events-none h-px w-full bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+
+      <div className="max-w-screen-2xl mx-auto py-12 px-6 md:px-10 lg:px-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-12">
+          {/* Brand and quick links */}
+          <div>
+            <div className="flex items-center gap-3">
+              <div className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-white/5 ring-1 ring-white/10">
+                <LuSparkles className="h-5 w-5 text-primary" aria-hidden="true" />
+              </div>
+              <div>
+                <p className="font-display text-xl text-white">NovaLibrary</p>
+                <p className="text-sm text-slate-400">Đọc. Khám phá. Phát triển.</p>
+              </div>
+            </div>
+
+            <nav aria-label="Footer quick links" className="mt-6">
+              <ul className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
+                <li><a className="flink hover:text-white" href="/">Trang chủ</a></li>
+                <li><a className="flink hover:text-white" href="/books">Sách</a></li>
+                <li><a className="flink hover:text-white" href="/borrow">Mượn sách</a></li>
+                <li><a className="flink hover:text-white" href="/wishlist">Yêu thích</a></li>
+                <li><a className="flink hover:text-white" href="/orders">Đơn hàng</a></li>
+                <li><a className="flink hover:text-white" href="/about">Giới thiệu</a></li>
+              </ul>
+            </nav>
+          </div>
+
+          {/* Newsletter */}
+          <div>
+            <div className="rounded-xl border border-white/10 bg-white/5 p-5 md:p-6 backdrop-blur-sm">
+              <div className="flex items-center gap-2 text-white">
+                <LuMail className="h-5 w-5 text-primary" aria-hidden="true" />
+                <h3 className="font-medium">Đăng ký nhận bản tin</h3>
+              </div>
+              <p className="mt-2 text-sm text-slate-400">Nhận cập nhật mới nhất, tuyển chọn hay và sự kiện đặc biệt.</p>
+
+              <form onSubmit={handleSubmit} className="mt-4 flex flex-col sm:flex-row gap-3">
+                <label className="sr-only" htmlFor="nl-email">Địa chỉ email</label>
+                <input
+                  id="nl-email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="ban@example.com"
+                  className="flex-1 rounded-lg bg-white/5 px-4 py-3 text-sm text-white placeholder:text-slate-400 outline-none ring-1 ring-inset ring-white/15 focus:ring-2 focus:ring-primary"
+                  aria-label="Địa chỉ email"
+                />
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  aria-label="Đăng ký nhận bản tin"
+                  className="btn-glow inline-flex min-h-11 min-w-11 items-center justify-center whitespace-nowrap rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-black transition focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-70"
+                >
+                  {submitting ? "Đang đăng ký…" : "Đăng ký"}
+                </button>
+              </form>
+
+              {/* Social icons */}
+              <div className="mt-5 flex gap-3">
+                <a
+                  href="https://facebook.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="NovaLibrary trên Facebook"
+                  className="icon-lift inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/5 text-slate-300 ring-1 ring-white/10 hover:text-white"
+                >
+                  <LuFacebook className="h-5 w-5" />
+                </a>
+                <a
+                  href="https://twitter.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="NovaLibrary trên Twitter"
+                  className="icon-lift inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/5 text-slate-300 ring-1 ring-white/10 hover:text-white"
+                >
+                  <LuTwitter className="h-5 w-5" />
+                </a>
+                <a
+                  href="https://instagram.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="NovaLibrary trên Instagram"
+                  className="icon-lift inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/5 text-slate-300 ring-1 ring-white/10 hover:text-white"
+                >
+                  <LuInstagram className="h-5 w-5" />
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Right Side - Newsletter */}
-        <div className="md:w-1/2 w-full">
-          <p className="mb-4">
-            Subscribe to our newsletter to receive the latest updates, news, and offers!
-          </p>
-          <div className="flex">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="w-full px-4 py-2 rounded-l-md text-black"
-            />
-            <button className="bg-primary px-6 py-2 rounded-r-md hover:bg-primary-dark">
-              Subscribe
-            </button>
+        {/* Bottom bar */}
+        <div className="mt-10 flex flex-col gap-4 border-t border-white/10 pt-6 md:flex-row md:items-center md:justify-between">
+          <p className="text-sm text-slate-400">© {new Date().getFullYear()} NovaLibrary. Bảo lưu mọi quyền.</p>
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
+            <a className="flink hover:text-white" href="/privacy">Chính sách bảo mật</a>
+            <a className="flink hover:text-white" href="/terms">Điều khoản dịch vụ</a>
+            <a className="flink hover:text-white" href="/contact">Liên hệ</a>
           </div>
         </div>
       </div>
-
-      {/* Bottom Section */}
-      <div className="container mx-auto flex flex-col md:flex-row justify-between items-center mt-10 border-t border-gray-700 pt-6">
-        {/* Left Side - Privacy Links */}
-        <ul className="flex gap-6 mb-4 md:mb-0">
-          <li><a href="#privacy" className="hover:text-primary">Privacy Policy</a></li>
-          <li><a href="#terms" className="hover:text-primary">Terms of Service</a></li>
-        </ul>
-
-        {/* Right Side - Social Icons */}
-        <div className="flex gap-6">
-          <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary">
-            <FaFacebook size={24} />
-          </a>
-          <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary">
-            <FaTwitter size={24} />
-          </a>
-          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary">
-            <FaInstagram size={24} />
-          </a>
-        </div>
-      </div>
     </footer>
-    ) 
-}
+  );
+};
 
 export default Footer;

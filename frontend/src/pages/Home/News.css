@@ -1,0 +1,54 @@
+/* === NEWS Swiper layout fixes === */
+.news-swiper .swiper-wrapper { 
+  align-items: stretch; 
+}
+
+.news-swiper .swiper-slide { 
+  height: auto; 
+  box-sizing: border-box; 
+}
+
+/* Card cao full để không còn khoảng trắng đáy */
+.news-card { 
+  display: flex; 
+  flex-direction: column; 
+  height: 100%; 
+}
+
+/* Hàng nội dung: text | thumb */
+.news-card__row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+/* Thumb cố định 112x112, bo tròn, che ảnh vừa khít */
+.news-card__thumb { 
+  width: 112px; 
+  height: 112px; 
+  border-radius: 10px; 
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.news-card__thumb img { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
+  display: block; 
+}
+
+/* Nút điều hướng đứng giữa, không đè nội dung */
+.news-swiper .nav-btn { 
+  top: 50%; 
+  transform: translateY(-50%); 
+}
+
+/* Tóm tắt không nhảy layout */
+.news-card__summary {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

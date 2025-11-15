@@ -1,7 +1,11 @@
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { addToCart, decrementQty } from "../../redux/features/cart/cartSlice.js";
+import { addToCart, decrementQty, setCartBooks } from "../../redux/features/cart/cartSlice.js";
 import { getImgUrl } from "../../utils/getImgUrl";
+import { useAuth } from "../../context/AuthContext";
+import { useEffect } from "react";
+import { getCartAPI, addToCartAPI, removeFromCartAPI } from "../../utils/cartAPI";
+import { getBooks } from "../../utils/booksCatalog";
 
 const money = (n) =>
   (Number(n) || 0).toLocaleString("vi-VN", { maximumFractionDigits: 0 }) + "đ";
@@ -9,9 +13,35 @@ const money = (n) =>
 export default function CartPage() {
   const dispatch = useDispatch();
   const { cartItems } = useSelector((state) => state.cart);
+  const { currentUser } = useAuth();
 
-  const handleAddMore = (book) => dispatch(addToCart(book));
-  const handleDecrease = (id) => dispatch(decrementQty(id));
+  useEffect(() => {
+    (async () => {
+      if (!currentUser) return;
+      try {
+        const [resp, books] = await Promise.all([getCartAPI(), getBooks()]);
+        const items = resp.data.items || [];
+        const mapped = items.map(({ bookId, qty }) => {
+          const book = books.find(b => String(b._id) === String(bookId));
+          return book ? { ...book, quantity: qty || 1 } : null;
+        }).filter(Boolean);
+        dispatch(setCartBooks(mapped));
+      } catch (e) {
+        console.warn('Failed to load cart', e);
+      }
+    })();
+  }, [currentUser, dispatch]);
+
+  const handleAddMore = async (book) => {
+    if (!currentUser) return;
+    try { await addToCartAPI(book._id, 1); } catch {}
+    dispatch(addToCart(book));
+  };
+  const handleDecrease = async (id) => {
+    if (!currentUser) return;
+    try { await removeFromCartAPI(id); } catch {}
+    dispatch(decrementQty(id));
+  };
 
   const totalPrice = cartItems.reduce(
     (sum, item) => sum + (item.newPrice || 0) * (item.quantity || 1),

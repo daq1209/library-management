@@ -1,10 +1,14 @@
 import { useLocation, useParams, Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../redux/features/cart/cartSlice.js";
-import { addToWishlist } from "../../redux/features/wishlist/wishlistSlice.js";
+import { addToWishlist, setWishlistBooks } from "../../redux/features/wishlist/wishlistSlice.js";
+import { addToCartAPI } from "../../utils/cartAPI";
+import { addToWishlistAPI, getWishlistAPI } from "../../utils/wishlistAPI";
 import { getImgUrl } from "../../utils/getImgUrl";
 import { useAuth } from "../../context/AuthContext";
+import { getBooks } from "../../utils/booksCatalog.js";
+import { useToast } from "../../context/ToastContext";
 
 export default function BookDetail() {
   const { id } = useParams();
@@ -12,6 +16,8 @@ export default function BookDetail() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { currentUser } = useAuth();
+  const { showToast } = useToast();
+  const wishlistItems = useSelector((s) => s.wishlist.items);
 
   const book = state?.book || null;
 
@@ -19,8 +25,14 @@ export default function BookDetail() {
     if (!book && !id) navigate("/", { replace: true });
   }, [book, id, navigate]);
 
-  const handleBuyNow = () => {
+  const handleBuyNow = async () => {
     if (!book) return;
+    if (!currentUser) {
+      showToast('Vui lòng đăng nhập để sử dụng Giỏ hàng', 'warning');
+      navigate('/login', { state: { from: location.pathname } });
+      return;
+    }
+    try { await addToCartAPI(book._id, 1); } catch {}
     dispatch(addToCart(book));
     navigate("/cart");
   };
@@ -28,16 +40,38 @@ export default function BookDetail() {
   const handleBorrow = () => {
     if (!book) return;
     if (!currentUser) {
-      alert("Vui lòng đăng nhập để mượn sách!");
+      showToast('Vui lòng đăng nhập để mượn sách', 'warning');
       navigate("/login");
       return;
     }
     navigate("/borrow", { state: { book } });
   };
 
-  const handleAddWishlist = () => {
+  const handleAddWishlist = async () => {
     if (!book) return;
-    dispatch(addToWishlist(book));
+    if (!currentUser) {
+      showToast('Vui lòng đăng nhập để sử dụng Wishlist', 'warning');
+      navigate('/login', { state: { from: location.pathname } });
+      return;
+    }
+    // Prevent duplicate add: show yellow toast if already in wishlist
+    const already = wishlistItems?.some((i) => String(i._id) === String(book._id));
+    if (already) {
+      showToast('Sách đã được thêm vào wishlist', 'warning');
+      return;
+    }
+    try {
+      await addToWishlistAPI(book._id ?? book.id);
+      // Sync with server after adding
+      const [resp, books] = await Promise.all([getWishlistAPI(), getBooks()]);
+      const ids = resp.data.items || [];
+      const mapped = ids.map(id => books.find(b => String(b._id) === String(id))).filter(Boolean);
+      dispatch(setWishlistBooks(mapped));
+      showToast('✨ Đã thêm vào Wishlist thành công', 'success');
+    } catch (err) {
+      console.error('Failed to add to wishlist:', err);
+      showToast('Không thể thêm vào Wishlist', 'error');
+    }
   };
 
   if (!book) {

@@ -1,14 +1,33 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { getCartAPI } from "../../../utils/cartAPI";
+import { getBooks } from "../../../utils/booksCatalog";
 
 const initialState = {
   // Mỗi item: { ...book, quantity }
   cartItems: [],
 };
 
+export const fetchCart = createAsyncThunk(
+  'cart/fetch',
+  async () => {
+    const [resp, books] = await Promise.all([getCartAPI(), getBooks()]);
+    const items = resp.data.items || [];
+    // Map { bookId, qty } -> { ...book, quantity: qty }
+    const mapped = items.map(({ bookId, qty }) => {
+      const book = books.find(b => String(b._id) === String(bookId));
+      return book ? { ...book, quantity: qty || 1 } : null;
+    }).filter(Boolean);
+    return mapped;
+  }
+);
+
 const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
+    setCartBooks: (state, action) => {
+      state.cartItems = action.payload || [];
+    },
     // Tăng số lượng (nếu chưa có thì thêm mới với qty = 1)
     addToCart: (state, action) => {
       const book = action.payload;
@@ -39,7 +58,12 @@ const cartSlice = createSlice({
       state.cartItems = state.cartItems.filter((i) => i._id !== id);
     },
   },
+  extraReducers: (builder) => {
+    builder.addCase(fetchCart.fulfilled, (state, action) => {
+      state.cartItems = action.payload || [];
+    });
+  }
 });
 
-export const { addToCart, decrementQty, removeFromCart } = cartSlice.actions;
+export const { setCartBooks, addToCart, decrementQty, removeFromCart } = cartSlice.actions;
 export default cartSlice.reducer;

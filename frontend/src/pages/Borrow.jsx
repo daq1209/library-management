@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useLocation, Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getImgUrl } from "../utils/getImgUrl";
+import { FaHandHolding, FaCircleInfo } from "react-icons/fa6";
 
 /**
  * Trang Borrow hỗ trợ 3 trường hợp:
@@ -33,13 +34,15 @@ export default function Borrow() {
 
   return (
     <section className="max-w-3xl mx-auto">
-      <h1 className="text-2xl md:text-3xl font-display font-bold text-slate-800 mb-4">
+      <h1 className="text-2xl md:text-3xl font-display font-bold text-slate-800 mb-4 flex items-center gap-2">
+        <FaHandHolding className="text-primary" />
         Mượn sách (Phí: 0đ)
       </h1>
 
       {!currentUser ? (
-        <div className="mb-4 p-3 rounded bg-yellow-50 border border-yellow-200 text-yellow-800">
-          Bạn cần <Link to="/login" className="underline font-medium">đăng nhập</Link> để mượn sách.
+        <div className="mb-4 p-3 rounded bg-yellow-50 border border-yellow-200 text-yellow-800 flex items-start gap-2">
+          <FaCircleInfo className="mt-0.5" />
+          <span> Bạn cần <Link to="/login" className="underline font-medium">đăng nhập</Link> để mượn sách.</span>
         </div>
       ) : (
         <div className="mb-4 text-sm text-slate-700">
